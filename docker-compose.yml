@@ -18,8 +18,8 @@ services:
     - tg_bot
 
   redis:
-    container_name: redis
-    image: redis
+    container_name: redis_test
+    image: redis_test
     ports:
       - "6379:6379"
     volumes:

@@ -10,6 +10,9 @@ class DbConfig:
     user: str
     database: str
 
+@dataclass
+class RedisConfig:
+    host: str
 
 @dataclass
 class TgBot:
@@ -28,6 +31,7 @@ class Config:
     tg_bot: TgBot
     db: DbConfig
     misc: Miscellaneous
+    redis: RedisConfig
 
 
 def load_config(path: str = None):
@@ -48,5 +52,8 @@ def load_config(path: str = None):
         ),
         misc=Miscellaneous(
             admin_group=env.str('ADMIN_GROUP')
+        ),
+        redis=RedisConfig(
+            host=env.str('REDIS_HOST')
         )
     )
