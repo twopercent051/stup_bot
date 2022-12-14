@@ -6,9 +6,11 @@ from tgbot.handlers.admin import register_admin
 from tgbot.handlers.user import register_user
 from tgbot.handlers.echo import register_echo
 from tgbot.middlewares.environment import EnvironmentMiddleware
-from tgbot.misc.sheduler import sheduler_jobs
+from tgbot.misc.scheduler import scheduler_jobs
+from tgbot.models.db_connector import sql_start
+from tgbot.models.redis_connector import redis_start
 
-from create_bot import bot, dp, config, sheduler
+from create_bot import bot, dp, config, scheduler
 
 logger = logging.getLogger(__name__)
 file_log = logging.FileHandler("logger.log")
@@ -28,7 +30,7 @@ def register_all_filters(dp):
 def register_all_handlers(dp):
     register_admin(dp)
     register_user(dp)
-    register_echo(dp)
+    # register_echo(dp)
 
 
 async def main():
@@ -43,8 +45,10 @@ async def main():
     register_all_middlewares(dp, config)
     register_all_filters(dp)
     register_all_handlers(dp)
-    sheduler.start()
-    sheduler_jobs()
+    scheduler.start()
+    scheduler_jobs()
+    sql_start()
+    redis_start()
 
     # start
     try:

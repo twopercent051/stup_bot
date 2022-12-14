@@ -3,12 +3,21 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import hcode
 
 
+
+
+async def get_chat_id(message: types.Message):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    text = f'user_id: {hcode(user_id)} || chat_id: {hcode(chat_id)}'
+    await message.answer(text)
+
+
 async def bot_echo(message: types.Message):
     text = [
         "Эхо без состояния.",
-        "Сообщение:",
-        message.text
+        "Сообщение:"
     ]
+    await message.answer('\n'.join(text))
 
     await message.answer('\n'.join(text))
 
@@ -24,5 +33,6 @@ async def bot_echo_all(message: types.Message, state: FSMContext):
 
 
 def register_echo(dp: Dispatcher):
-    dp.register_message_handler(bot_echo)
-    dp.register_message_handler(bot_echo_all, state="*", content_types=types.ContentTypes.ANY)
+    dp.register_message_handler(get_chat_id, state='*', commands='get_id')
+    # dp.register_message_handler(bot_echo)
+    # dp.register_message_handler(bot_echo_all, state="*", content_types=types.ContentTypes.ANY)

@@ -7,8 +7,9 @@ from tgbot.config import load_config
 
 
 
-config = load_config(".env.dist")
-storage = RedisStorage2() if config.tg_bot.use_redis else MemoryStorage()
+config = load_config(".env")
+# storage = RedisStorage2() if config.tg_bot.use_redis else MemoryStorage()
+storage = RedisStorage2()
 bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
 dp = Dispatcher(bot, storage=storage)
-sheduler = AsyncIOScheduler()
+scheduler = AsyncIOScheduler()

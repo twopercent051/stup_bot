@@ -20,7 +20,7 @@ class TgBot:
 
 @dataclass
 class Miscellaneous:
-    pass
+    admin_group: str
 
 
 @dataclass
@@ -46,5 +46,7 @@ def load_config(path: str = None):
             user=env.str('DB_USER'),
             database=env.str('DB_NAME')
         ),
-        misc=Miscellaneous()
+        misc=Miscellaneous(
+            admin_group=env.str('ADMIN_GROUP')
+        )
     )
