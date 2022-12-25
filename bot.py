@@ -8,7 +8,6 @@ from tgbot.handlers.echo import register_echo
 from tgbot.middlewares.environment import EnvironmentMiddleware
 from tgbot.misc.scheduler import scheduler_jobs
 from tgbot.models.db_connector import sql_start
-from tgbot.models.redis_connector import redis_start
 
 from create_bot import bot, dp, config, scheduler
 
@@ -48,7 +47,6 @@ async def main():
     scheduler.start()
     scheduler_jobs()
     sql_start()
-    redis_start()
 
     # start
     try:
