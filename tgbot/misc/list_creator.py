@@ -42,7 +42,7 @@ async def create_csv(event_id):
         if wish == 'no_diff':
             place = 'Без разницы'
         username = reg['nick_name']
-        with open(f'{os.getcwd()}/event_list.csv', 'a', encoding='utf-8-sig') as file:
+        with open(f'{os.getcwd()}/event_list.csv', 'a', encoding='utf-8') as file:
             writer = csv.writer(file, lineterminator='\n')
             writer.writerow(
                 (

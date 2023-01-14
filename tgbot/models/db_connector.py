@@ -22,6 +22,74 @@ def connection_init():
     return connection
 
 
+def create_column_tech():
+    connection = connection_init()
+    query = 'ALTER TABLE users ADD COLUMN user_id_str VARCHAR(40);'
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+    finally:
+        connection.commit()
+        connection.close()
+
+def copy_user_tech():
+    connection = connection_init()
+    query = 'SELECT user_id FROM users;'
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = cursor.fetchall()
+    finally:
+        connection.commit()
+        connection.close()
+    for user in result:
+        user_id_str = str(user['user_id'])
+        print(user_id_str)
+        connection = connection_init()
+        query = 'UPDATE users SET user_id_str = %s WHERE user_id = %s;'
+        query_tuple = (user_id_str, int(user_id_str))
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, query_tuple)
+        finally:
+            connection.commit()
+            connection.close()
+
+
+def drop_column_tech():
+    connection = connection_init()
+    query = 'ALTER TABLE users DROP user_id;'
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+    finally:
+        connection.commit()
+        connection.close()
+
+
+def replace_column_tech():
+    connection = connection_init()
+    query = 'ALTER TABLE users MODIFY COLUMN user_id_str VARCHAR(40) AFTER id;'
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+    finally:
+        connection.commit()
+        connection.close()
+
+    connection = connection_init()
+    query = 'ALTER TABLE users CHANGE COLUMN user_id_str user_id VARCHAR(40);'
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+    finally:
+        connection.commit()
+        connection.close()
+
+
+
+
+
 def sql_start():
     connection = connection_init()
     try:
@@ -223,14 +291,15 @@ async def is_registrated_sql(user_id, event_id):
 
 
 async def get_user_registrations(user_id):
+    now = time.time() - 3600
     connection = connection_init()
     query = """
         SELECT *
         FROM events
         INNER JOIN registrations ON events.id = registrations.event_id
-        WHERE registrations.user_id = %s
+        WHERE registrations.user_id = %s AND events.dtime > %s;
         """
-    query_tuple = (user_id,)
+    query_tuple = (user_id, now)
     try:
         with connection.cursor() as cursor:
             cursor.execute(query, query_tuple)

@@ -13,7 +13,7 @@ from create_bot import bot
 
 
 async def user_start_msg(message: Message):
-    user_id = message.from_user.id
+    user_id = str(message.from_user.id)
     username = message.from_user.username
     is_user = await is_user_sql(user_id)
     if not is_user:
@@ -57,7 +57,7 @@ async def click_event(callback: CallbackQuery, state: FSMContext):
     else:
         user_username = f'@{username_pr}'
     event_id = callback.data.split(':')[1]
-    is_registarted = await is_registrated_sql(user_id, event_id)
+    is_registarted = await is_registrated_sql(str(user_id), event_id)
     event_capacity_pr = await get_event_capacity_sql(event_id)
     event_capacity = event_capacity_pr['capacity']
     event_total_pr = await get_total_regs_sql(event_id)
@@ -87,6 +87,7 @@ async def click_event(callback: CallbackQuery, state: FSMContext):
             event_dict['description'],
             '',
             f'⏰ Встречаемся {event_dtime}',
+            '',
             f'📌 Место встречи: {event_dict["location"]}'
         ]
         keyboard = home_kb()
@@ -94,7 +95,7 @@ async def click_event(callback: CallbackQuery, state: FSMContext):
             data['event_id'] = event_id
             data['event_title'] = event_dict["title"]
             data['event_dtime'] = event_dict["dtime"]
-            data['user_id'] = user_id
+            data['user_id'] = str(user_id)
             data['nick_name'] = user_username
         await FSMUser.number_persons.set()
         await bot.send_photo(chat_id=user_id, photo=event_dict['photo_id'], caption='\n'.join(event_text))
@@ -161,7 +162,7 @@ async def registration_finish(callback: CallbackQuery, state: FSMContext):
 
 async def edit_registrations(callback: CallbackQuery):
     user_id = callback.from_user.id
-    registrations = await get_user_registrations(user_id)
+    registrations = await get_user_registrations(str(user_id))
     if len(registrations) == 0:
         text = 'Вы пока ничего не забронировали'
         keyboard = home_kb()
@@ -187,7 +188,7 @@ async def edit_persons(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     async with state.proxy() as data:
         event_id = data.as_dict()['event_id']
-    persons_prev = await get_reg_persons(event_id, user_id)
+    persons_prev = await get_reg_persons(event_id, str(user_id))
     persons = persons_prev['number_persons']
     text = f'Сейчас записано {persons} человек. Отправьте новое количество.'
     keyboard = home_kb()
@@ -200,7 +201,7 @@ async def new_persons(message: Message, state: FSMContext):
         user_id = message.from_user.id
         async with state.proxy() as data:
             event_id = data.as_dict()['event_id']
-        await edit_persons_sql(event_id, user_id, message.text)
+        await edit_persons_sql(event_id, str(user_id), message.text)
         text = 'Здорово! Мы внесли изменения'
         await FSMUser.wish.set()
     else:
@@ -214,7 +215,7 @@ async def delete_reg(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     async with state.proxy() as data:
         event_id = data.as_dict()['event_id']
-    await delete_registration_sql(event_id, user_id)
+    await delete_registration_sql(event_id, str(user_id))
     text = 'Вы удалили запись.'
     keyboard = home_kb()
     await callback.message.answer(text, reply_markup=keyboard)

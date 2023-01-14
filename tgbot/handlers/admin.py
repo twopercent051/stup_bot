@@ -144,6 +144,7 @@ async def create_event_description(message: Message, state: FSMContext):
         description,
         '',
         f'⏰ Встречаемся {event_dtime}',
+        '',
         f'📌 Место встречи: {location}',
         'Подтвердите или начните заново'
     ]
@@ -358,7 +359,7 @@ async def edit_registration(callback: CallbackQuery, state: FSMContext):
     text = [
         'Введите актуальное количество человек или 0 (ноль) для удаления брони. Сейчас запись на',
         f'{num_persons["number_persons"]} человек'
-            ]
+    ]
     keyboard = home_kb()
     async with state.proxy() as data:
         data['reg_id'] = reg_id
@@ -412,7 +413,7 @@ async def deleting_finish(message: Message, state: FSMContext):
     await delete_reg_event_sql(event_id)
     count = 0
     for user in user_list:
-        user_id = user['user_id']
+        user_id = int(user['user_id'])
         try:
             await bot.send_message(chat_id=user_id, text=message.text)
             count += 1
@@ -448,7 +449,7 @@ async def send_mailing_txt(message: Message):
     user_list = await get_users_sql()
     count = 0
     for user in user_list:
-        user_id = user['user_id']
+        user_id = int(user['user_id'])
         try:
             await bot.send_message(user_id, message.text)
             count += 1
@@ -465,7 +466,7 @@ async def send_mailing_media(message: Message):
     user_list = await get_users_sql()
     count = 0
     for user in user_list:
-        user_id = user['user_id']
+        user_id = int(user['user_id'])
         try:
             if len(message.photo) != 0:
                 photo = message.photo[0].file_id
